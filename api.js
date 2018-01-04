@@ -13,7 +13,22 @@ app.get('/', function (req, res) {
 
 // GET a random gif from giphy
 app.get('/random', (req, res) => {
-  res.send('get /random');
+  const url = `https://api.giphy.com/v1/gifs/random?api_key=${process.env.GIPHY_API_KEY}&filter=PG-13`;
+  
+  request(url, (error, response, body) => {
+    if(error) {
+      res.status(400).json(error);
+      return;
+    }
+    
+    body = JSON.parse(body);
+    const gif = {
+      id: body.data.id,
+      url: body.data.image_original_url
+    };
+    
+    res.status(200).json(gif);
+  });
 });
 
 // POST gif with caption
