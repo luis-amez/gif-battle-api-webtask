@@ -33,7 +33,24 @@ app.get('/random', (req, res) => {
 
 // POST gif with caption
 app.post('/', (req, res) => {
-  res.send('post /');
+  // Store into webtaskContext.storage
+  req.webtaskContext.storage.get((error, data) => {
+    if (error) {
+      res.status(400).json(error);
+      return;
+    }
+    
+    data = data || [];
+    data.push(req.body);
+    req.webtaskContext.storage.set(data, error => {
+      if (error) {
+        res.status(400).json(error);
+        return;
+      }
+      
+      res.status(200).json({ message: 'Gif successfully stored!' })
+    });
+  });
 });
 
 // ----- BATTLE -----
