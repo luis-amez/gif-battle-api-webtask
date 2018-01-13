@@ -55,9 +55,18 @@ app.post('/', (req, res) => {
 
 // ----- BATTLE -----
 
-// GET 2 random gifs with caption
+// GET 2 random gifs with captions
 app.get('/versus', (req, res) => {
-  res.send('get /versus');
+  req.webtaskContext.storage.get((error, data) => {
+    if (error) {
+      res.status(400).json(error);
+      return;
+    }
+    
+    data = _.shuffle(data);
+    const twoGifs = data.slice(0, 2);
+    res.status(200).json(twoGifs);
+  });
 });
 
 // POST a vote
