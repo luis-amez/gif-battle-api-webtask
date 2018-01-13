@@ -71,7 +71,30 @@ app.get('/versus', (req, res) => {
 
 // POST a vote
 app.post('/vote', (req, res) => {
-  res.send('post /vote');
+  req.webtaskContext.storage.get((error, data) => {
+    if (error) {
+      res.status(400).json(error);
+      return;
+    }
+    
+    // Find the index in our database array
+    const index = data.findIndex((gif) => {
+      return gif.id === req.body.id;
+    });
+    
+    // Increment the votes
+    data[index].votes++;
+    
+    // Save the updated database array
+    req.webtaskContext.storage.set(data, (error) => {
+      if (error) {
+        res.status(400).json(error);
+        return;
+      }
+      
+      res.status(200).json({ message: 'Gif successfully voted!' })
+    });
+  })
 });
 
 // ----- LEADERBOARD -----
