@@ -99,7 +99,18 @@ app.post('/vote', (req, res) => {
 
 // ----- LEADERBOARD -----
 app.get('/leaderboard', (req, res) => {
-  res.send('get /leaderboard');
+  req.webtaskContext.storage.get((error, data) => {
+    if (error) {
+      res.status(400).json(error);
+      return;
+    }
+    
+    data = data.sort((a, b) => {
+      return b.votes - a.votes;
+    })
+    const topTen = data.slice(0, 10);
+    res.status(200).json(topTen);
+  })
 });
 
 module.exports = Webtask.fromExpress(app);
